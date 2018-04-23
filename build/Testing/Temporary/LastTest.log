@@ -1,0 +1,29 @@
+Start testing: Apr 22 21:45 NZST
+----------------------------------------------------------
+1/1 Testing: octreetests
+1/1 Test: octreetests
+Command: "/Users/will/octree/build/octreetests"
+Directory: /Users/will/octree/build
+"octreetests" start time: Apr 22 21:45 NZST
+Output:
+----------------------------------------------------------
+Running main() from gtest_main.cc
+[==========] Running 1 test from 1 test case.
+[----------] Global test environment set-up.
+[----------] 1 test from Octree
+[ RUN      ] Octree.SetValue
+[       OK ] Octree.SetValue (0 ms)
+[----------] 1 test from Octree (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test case ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.05 sec
+----------------------------------------------------------
+Test Passed.
+"octreetests" end time: Apr 22 21:45 NZST
+"octreetests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Apr 22 21:45 NZST

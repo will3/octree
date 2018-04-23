@@ -1,0 +1,1 @@
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++   -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/octreetests.dir/tests/octreetests.cpp.o  -o octreetests lib/googletest/googlemock/gtest/libgtest.a lib/googletest/googlemock/gtest/libgtest_main.a lib/googletest/googlemock/gtest/libgtest.a 

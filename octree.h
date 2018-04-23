@@ -1,17 +1,17 @@
 #pragma once
 #include <vector>
 #include <array>
-
+#include <math.h>   
 template<typename T>
 class Octree {
 private:
-    std::vector<Octree> children;
     std::vector<T> data;
     
 public:
+    std::vector<Octree> children;
     std::array<int, 3> origin;
-    int size = 32;
     int level = 0;
+    int size = 32;
     
     T get(int i, int j, int k) {
         if (level == 0) {
@@ -35,6 +35,7 @@ public:
             
             int index = i * size * size + j * size + k;
             data[index] = v;
+            return;
         }
         
         if (children.size() == 0) {
@@ -73,15 +74,16 @@ public:
         int i = origin[0];
         int j = origin[1];
         int k = origin[2];
-        children.push_back(new Octree(i, j + 0, k + 0, level - 1));
-        children.push_back(new Octree(i, j + 0, k + hs, level - 1));
-        children.push_back(new Octree(i, j + hs, k + 0, level - 1));
-        children.push_back(new Octree(i, j + hs, k + hs, level - 1));
+
+        children.push_back(Octree(i, j + 0, k + 0, level - 1));
+        children.push_back(Octree(i, j + 0, k + hs, level - 1));
+        children.push_back(Octree(i, j + hs, k + 0, level - 1));
+        children.push_back(Octree(i, j + hs, k + hs, level - 1));
         
-        children.push_back(new Octree(i + hs, j + 0, k + 0, level - 1));
-        children.push_back(new Octree(i + hs, j + 0, k + hs, level - 1));
-        children.push_back(new Octree(i + hs, j + hs, k + 0, level - 1));
-        children.push_back(new Octree(i + hs, j + hs, k + hs, level - 1));
+        children.push_back(Octree(i + hs, j + 0, k + 0, level - 1));
+        children.push_back(Octree(i + hs, j + 0, k + hs, level - 1));
+        children.push_back(Octree(i + hs, j + hs, k + 0, level - 1));
+        children.push_back(Octree(i + hs, j + hs, k + hs, level - 1));
     }
     
     void makeChildren(Octree existing) {
@@ -93,37 +95,44 @@ public:
         int j = origin[1];
         int k = origin[2];
         
-        children.push_back(childIndex == children.size() ? existing : new Octree(i, j + 0, k + 0, level - 1));
-        children.push_back(childIndex == children.size() ? existing : new Octree(i, j + 0, k + hs, level - 1));
-        children.push_back(childIndex == children.size() ? existing : new Octree(i, j + hs, k + 0, level - 1));
-        children.push_back(childIndex == children.size() ? existing : new Octree(i, j + hs, k + hs, level - 1));
+        children.push_back(childIndex == children.size() ? existing : Octree(i, j + 0, k + 0, level - 1));
+        children.push_back(childIndex == children.size() ? existing : Octree(i, j + 0, k + hs, level - 1));
+        children.push_back(childIndex == children.size() ? existing : Octree(i, j + hs, k + 0, level - 1));
+        children.push_back(childIndex == children.size() ? existing : Octree(i, j + hs, k + hs, level - 1));
         
-        children.push_back(childIndex == children.size() ? existing : new Octree(i + hs, j + 0, k + 0, level - 1));
-        children.push_back(childIndex == children.size() ? existing : new Octree(i + hs, j + 0, k + hs, level - 1));
-        children.push_back(childIndex == children.size() ? existing : new Octree(i + hs, j + hs, k + 0, level - 1));
-        children.push_back(childIndex == children.size() ? existing : new Octree(i + hs, j + hs, k + hs, level - 1));
+        children.push_back(childIndex == children.size() ? existing : Octree(i + hs, j + 0, k + 0, level - 1));
+        children.push_back(childIndex == children.size() ? existing : Octree(i + hs, j + 0, k + hs, level - 1));
+        children.push_back(childIndex == children.size() ? existing : Octree(i + hs, j + hs, k + 0, level - 1));
+        children.push_back(childIndex == children.size() ? existing : Octree(i + hs, j + hs, k + hs, level - 1));
     }
     
     Octree(int i, int j, int k, int level) : level(level) {
         origin[0] = i;
         origin[1] = j;
         origin[2] = k;
+        size = 32 * pow(2, level);
     }
+
+    Octree() {
+        origin[0] = origin[1] = origin[2] = 0;
+    };
 };
 
 template<typename T>
 class ResizableOctree {
-private:
+public:
     Octree<T> data;
+    ResizableOctree() {};
+
     void expandTree(bool expandI, bool expandJ, bool expandK) {
         int i = expandI ? data.origin[0] : data.origin[0] - data.size;
         int j = expandJ ? data.origin[1] : data.origin[1] - data.size;
         int k = expandK ? data.origin[2] : data.origin[2] - data.size;
-        Octree<T> parent = new Octree<T>(i, j, k, data.level + 1);
+        Octree<T> parent = Octree<T>(i, j, k, data.level + 1);
         parent.makeChildren(data);
         data = parent;
     }
-public:
+
     T get(int i, int j, int k) {
         if (i < data.origin[0] || j < data.origin[1] || k < data.origin[2] ||
             i >= data.origin[0] + data.size || j >= data.origin[1] + data.size || k >= data.origin[2] + data.size) {
@@ -133,10 +142,16 @@ public:
     }
     
     void set(int i, int j, int k, T v) {
-        if (i < data.origin[0] || j < data.origin[1] || k < data.origin[2] ||
-            i >= data.origin[0] + data.size || j >= data.origin[1] + data.size || k >= data.origin[2] + data.size) {
+        if (i < data.origin[0] ||
+            j < data.origin[1] ||
+            k < data.origin[2] ||
+            i >= data.origin[0] + data.size ||
+            j >= data.origin[1] + data.size ||
+            k >= data.origin[2] + data.size) {
             expandTree(i >= data.origin[0] + data.size, j >= data.origin[1] + data.size, k >= data.origin[2] + data.size);
+            // set(i, j, k, v);
+        } else {
+            data.set(i, j, k, v);
         }
-        set(i, j, k, v);
     }
 };
